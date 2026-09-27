@@ -4,6 +4,7 @@ import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
 import android.annotation.SuppressLint
 import android.app.ForegroundServiceStartNotAllowedException
+import android.app.PendingIntent
 import android.app.PictureInPictureParams
 import android.app.RemoteAction
 import android.content.BroadcastReceiver
@@ -15,6 +16,8 @@ import android.content.pm.PackageManager
 import android.content.res.ColorStateList
 import android.content.res.Configuration
 import android.graphics.drawable.Icon
+import android.hardware.usb.UsbDevice
+import android.hardware.usb.UsbManager
 import android.media.AudioManager
 import android.net.Uri
 import android.os.*
@@ -95,6 +98,7 @@ class MPVActivity : AppCompatActivity(), MPVLib.EventObserver, TouchGesturesObse
 
     private var xrealInitiated = false
     private var xrealControlRunning = false
+    private var xrealUsbReceiver: BroadcastReceiver? = null
 
     private val seekBarChangeListener = object : SeekBar.OnSeekBarChangeListener {
         override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
@@ -305,11 +309,13 @@ class MPVActivity : AppCompatActivity(), MPVLib.EventObserver, TouchGesturesObse
 
         var lastUpdateTime: Long = 0
         val THROTTLE_MS: Long = 33
+        var lastImuLogTime: Long = 0
 
         Control.setImuCallback { t1, _, gx, gy, gz, az, ay, ax ->
             val imuSample = IMUData(gx, gy, gz, ax, ay, az)
 
-            if (tracker.calibrate(imuSample)) {
+            val calibrated = tracker.calibrate(imuSample)
+            if (calibrated) {
                 tracker.update(imuSample, t1)
 
                 val currentTime = System.currentTimeMillis()
@@ -321,9 +327,18 @@ class MPVActivity : AppCompatActivity(), MPVLib.EventObserver, TouchGesturesObse
             } else {
                 vr.showCalibration(tracker.calibrationProgress);
             }
+
+            val nowLog = System.currentTimeMillis()
+            if (nowLog - lastImuLogTime > 1000) {
+                Log.d("XrealIMU", "cb calibrated=$calibrated progress=${"%.0f".format(tracker.calibrationProgress)} g=$gx,$gy,$gz")
+                lastImuLogTime = nowLog
+            }
         }
 
         //Startup.nativeStartDeviceLog()
+        // Point the service at the extracted .so dir so it can load its USB/IMU backend (libnr_libusb.so)
+        Startup.nativeSetNativeLibraryPath(applicationInfo.nativeLibraryDir)
+        Startup.nativeSetJavaLibraryPath(applicationInfo.nativeLibraryDir)
         Startup.nativeInitService(this)
         Startup.nativeStartService()
         Startup.nativeGlassesInit()
@@ -354,20 +369,90 @@ class MPVActivity : AppCompatActivity(), MPVLib.EventObserver, TouchGesturesObse
         }
     }
 
-    private fun startXrealControl() {
-        if (!xrealInitiated) {
-            initXrealLibrary()
-            xrealInitiated = true
-        }
+    private fun findXrealDevice(): UsbDevice? {
+        val usbManager = getSystemService(Context.USB_SERVICE) as UsbManager
+        return usbManager.deviceList.values.firstOrNull { it.vendorId == XREAL_USB_VENDOR_ID }
+    }
 
-        tracker.resetCalibration()
-        Startup.nativeImuResume()
+    private fun startXrealControl() {
+        val usbManager = getSystemService(Context.USB_SERVICE) as UsbManager
+        val device = findXrealDevice()
+        if (device == null) {
+            Toast.makeText(this, "Xreal glasses not detected over USB", Toast.LENGTH_SHORT).show()
+            return
+        }
+        // The bundled Xreal SDK opens the glasses over USB directly; without an
+        // explicit permission grant the device node is inaccessible and the
+        // native service dereferences null and crashes. Gate init on permission.
+        if (!usbManager.hasPermission(device)) {
+            requestXrealUsbPermission(usbManager, device)
+            return
+        }
+        beginXrealControl()
+    }
+
+    private fun requestXrealUsbPermission(usbManager: UsbManager, device: UsbDevice) {
+        if (xrealUsbReceiver == null) {
+            xrealUsbReceiver = object : BroadcastReceiver() {
+                override fun onReceive(context: Context, intent: Intent) {
+                    if (intent.action != ACTION_XREAL_USB_PERMISSION) return
+                    if (intent.getBooleanExtra(UsbManager.EXTRA_PERMISSION_GRANTED, false)) {
+                        beginXrealControl()
+                    } else {
+                        Toast.makeText(this@MPVActivity, "USB permission denied for Xreal glasses", Toast.LENGTH_SHORT).show()
+                    }
+                }
+            }
+            ContextCompat.registerReceiver(
+                this, xrealUsbReceiver, IntentFilter(ACTION_XREAL_USB_PERMISSION),
+                ContextCompat.RECEIVER_NOT_EXPORTED
+            )
+        }
+        val mutableFlag = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S)
+            PendingIntent.FLAG_MUTABLE else 0
+        val pi = PendingIntent.getBroadcast(
+            this, 0,
+            Intent(ACTION_XREAL_USB_PERMISSION).setPackage(packageName),
+            PendingIntent.FLAG_UPDATE_CURRENT or mutableFlag
+        )
+        usbManager.requestPermission(device, pi)
+    }
+
+    private fun beginXrealControl() {
+        if (xrealControlRunning) return
         xrealControlRunning = true
+        // Native USB/service init and resume can block for hundreds of ms; run
+        // off the UI thread so a relaunch can't ANR the input dispatcher.
+        Thread {
+            try {
+                val usbManager = getSystemService(Context.USB_SERVICE) as UsbManager
+                findXrealDevice()?.let { device ->
+                    if (usbManager.hasPermission(device)) {
+                        usbManager.openDevice(device)?.close()
+                    }
+                }
+                if (!xrealInitiated) {
+                    initXrealLibrary()
+                    xrealInitiated = true
+                }
+                tracker.resetCalibration()
+                Startup.nativeImuResume()
+            } catch (e: Exception) {
+                Log.e(TAG, "Xreal start failed", e)
+                xrealControlRunning = false
+            }
+        }.start()
     }
 
     private fun stopXrealControl() {
-        Startup.nativeImuPause()
         xrealControlRunning = false
+        Thread {
+            try {
+                Startup.nativeImuPause()
+            } catch (e: Exception) {
+                Log.e(TAG, "Xreal stop failed", e)
+            }
+        }.start()
     }
 
     private var playbackHasStarted = false
@@ -473,6 +558,10 @@ class MPVActivity : AppCompatActivity(), MPVLib.EventObserver, TouchGesturesObse
     override fun onDestroy() {
         Log.v(TAG, "Exiting.")
 
+        xrealUsbReceiver?.let {
+            try { unregisterReceiver(it) } catch (_: Exception) {}
+            xrealUsbReceiver = null
+        }
         destroyXrealLibrary()
 
         // Suppress any further callbacks
@@ -2250,6 +2339,9 @@ class MPVActivity : AppCompatActivity(), MPVLib.EventObserver, TouchGesturesObse
         private const val STREAM_TYPE = AudioManager.STREAM_MUSIC
         // precision used by seekbar (1/s)
         private const val SEEK_BAR_PRECISION = 2
+        // Xreal glasses USB identity (vendor 0x3318) and permission action
+        private const val XREAL_USB_VENDOR_ID = 13080
+        private const val ACTION_XREAL_USB_PERMISSION = "is.vr.mpv.USB_PERMISSION"
 
         init {
             System.loadLibrary("nr_service")

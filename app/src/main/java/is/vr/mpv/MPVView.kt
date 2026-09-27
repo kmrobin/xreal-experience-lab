@@ -23,6 +23,10 @@ internal class MPVView(context: Context, attrs: AttributeSet) : BaseMPVView(cont
         // apply phone-optimized defaults
         MPVLib.setOptionString("profile", "fast")
 
+        // keep still images on screen instead of auto-closing at EOF
+        MPVLib.setOptionString("image-display-duration", "inf")
+        MPVLib.setOptionString("keep-open", "yes")
+
         // vo
         setVo(if (sharedPreferences.getBoolean("gpu_next", true))
             "gpu-next"

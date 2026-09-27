@@ -14,8 +14,10 @@ class Mpv360Controller() {
         // Tuned for Xreal One (base, ~50° FOV): slightly narrower default than
         // the One Pro so content fills the smaller panel. Adjustable in-app.
         var fov: Double = Math.toRadians(90.0),
-        var inputProjection: Int = 2,
-        var eye: Int = 2,
+        // Mono equirectangular defaults so a normal 360 panorama fills the
+        // screen as a single look-around view (no side-by-side split).
+        var inputProjection: Int = 0,
+        var eye: Int = 0,
         var fisheyeFov: Double = Math.toRadians(180.0),
         var mouseSensitivity: Double = Math.toRadians(0.13),
         var step: Double = Math.toRadians(2.5),
@@ -142,6 +144,7 @@ class Mpv360Controller() {
         // Add the shader - adjust path to match your asset/shader location
         MPVLib.command(arrayOf("no-osd", "change-list", "glsl-shaders", "append", "~~/mpv360.glsl"))
         MPVLib.command(arrayOf("no-osd", "set", "keepaspect", "no"))
+        startMouseLook() // enable touch look-around by default
         Log.d(TAG, "360° mode enabled - ${getProjectionName()}")
     }
 
