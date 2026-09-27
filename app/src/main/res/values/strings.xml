@@ -207,7 +207,7 @@
 
     <!-- Experience Lab -->
     <string name="app_name">ExperienceLab</string>
-    <string name="hub_eyebrow">Experience Lab</string>
+    <string name="hub_eyebrow">Adobe Experience Lab</string>
     <string name="hub_title">Welcome</string>
     <string name="hub_subtitle">Review products and step into immersive scenes on your XREAL One glasses.</string>
     <string name="hub_choose_persona">Choose your experience</string>

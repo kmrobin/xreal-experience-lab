@@ -51,22 +51,38 @@
   // as a mouse pointer *hover* (no button held) and model-viewer's drag-orbit
   // never triggers. Rotate the model directly from that movement; touch input
   // on the phone still uses model-viewer's native orbit.
-  let px = null, py = null;
+  let px = null, py = null, vx = 0, vy = 0, lastMove = 0;
+  function rotateBy(dx, dy) {
+    const o = mv.getCameraOrbit();
+    const theta = o.theta * 180 / Math.PI + dx * 0.4;
+    let phi = o.phi * 180 / Math.PI - dy * 0.4;
+    phi = Math.max(5, Math.min(175, phi));
+    mv.cameraOrbit = theta + 'deg ' + phi + 'deg ' + o.radius + 'm';
+  }
   mv.addEventListener('pointermove', function (e) {
     if (e.pointerType === 'touch') return;
     if (px !== null) {
       const dx = e.clientX - px, dy = e.clientY - py;
-      const o = mv.getCameraOrbit();
-      const theta = o.theta * 180 / Math.PI + dx * 0.4;
-      let phi = o.phi * 180 / Math.PI - dy * 0.4;
-      phi = Math.max(5, Math.min(175, phi));
-      mv.cameraOrbit = theta + 'deg ' + phi + 'deg ' + o.radius + 'm';
+      vx = dx; vy = dy;
+      rotateBy(dx, dy);
     }
     px = e.clientX; py = e.clientY;
+    lastMove = performance.now();
   });
   ['pointerleave', 'pointerup', 'pointercancel'].forEach(function (ev) {
     mv.addEventListener(ev, function () { px = null; py = null; });
   });
+  // Momentum: when the trackpad cursor stalls at the screen edge (or a swipe is
+  // flicked), keep spinning from the last velocity so a full 360 needs no
+  // repeated edge-to-edge dragging.
+  function inertia() {
+    if (performance.now() - lastMove > 55 && (Math.abs(vx) > 0.15 || Math.abs(vy) > 0.15)) {
+      rotateBy(vx, vy);
+      vx *= 0.94; vy *= 0.94;
+    }
+    requestAnimationFrame(inertia);
+  }
+  requestAnimationFrame(inertia);
 </script>
 </body>
 </html>

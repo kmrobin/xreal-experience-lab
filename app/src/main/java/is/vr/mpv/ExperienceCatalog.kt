@@ -47,6 +47,13 @@ object ExperienceCatalog {
             imageAsset = "scenes/scene_canal_lock.jpg",
             thumbAsset = "scenes/thumbs/scene_canal_lock.jpg",
         ),
+        SceneItem(
+            id = "bedroom",
+            title = "Modern Bedroom",
+            subtitle = "Interior design walkthrough",
+            imageAsset = "scenes/scene_bedroom.jpg",
+            thumbAsset = "scenes/thumbs/scene_bedroom.jpg",
+        ),
     )
 
     // Products load bundled .glb models from assets/models/ (served via the
