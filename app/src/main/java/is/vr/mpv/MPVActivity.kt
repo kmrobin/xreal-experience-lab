@@ -99,6 +99,27 @@ class MPVActivity : AppCompatActivity(), MPVLib.EventObserver, TouchGesturesObse
     private var xrealInitiated = false
     private var xrealControlRunning = false
     private var xrealUsbReceiver: BroadcastReceiver? = null
+    // Bypass the unstable NRSDK: read the glasses IMU directly over USB.
+    private val useDirectImu = false
+    private var xrealDirectImu: XrealDirectImu? = null
+    private var lastDirectUpdate = 0L
+    private var lastImuSampleTimeMs = 0L
+    private var imuStallReported = false
+    private val imuWatchdog = Handler(Looper.getMainLooper())
+    private val imuWatchdogRunnable = object : Runnable {
+        override fun run() {
+            if (!xrealControlRunning) return
+            if (System.currentTimeMillis() - lastImuSampleTimeMs > 1500 && !imuStallReported) {
+                imuStallReported = true
+                Toast.makeText(
+                    this@MPVActivity,
+                    "Head tracking stopped. Reboot the glasses or phone, then relaunch to reset.",
+                    Toast.LENGTH_LONG
+                ).show()
+            }
+            imuWatchdog.postDelayed(this, 1000)
+        }
+    }
 
     private val seekBarChangeListener = object : SeekBar.OnSeekBarChangeListener {
         override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
@@ -312,6 +333,14 @@ class MPVActivity : AppCompatActivity(), MPVLib.EventObserver, TouchGesturesObse
         var lastImuLogTime: Long = 0
 
         Control.setImuCallback { t1, _, gx, gy, gz, az, ay, ax ->
+            lastImuSampleTimeMs = System.currentTimeMillis()
+            // Drop corrupt SDK samples (e.g. gz ~ -3e11) before they poison
+            // calibration bias or the orientation integration.
+            if (!gx.isFinite() || !gy.isFinite() || !gz.isFinite() ||
+                !ax.isFinite() || !ay.isFinite() || !az.isFinite() ||
+                gx !in -50f..50f || gy !in -50f..50f || gz !in -50f..50f) {
+                return@setImuCallback
+            }
             val imuSample = IMUData(gx, gy, gz, ax, ay, az)
 
             val calibrated = tracker.calibrate(imuSample)
@@ -421,6 +450,10 @@ class MPVActivity : AppCompatActivity(), MPVLib.EventObserver, TouchGesturesObse
     private fun beginXrealControl() {
         if (xrealControlRunning) return
         xrealControlRunning = true
+        if (useDirectImu) {
+            startDirectImu()
+            return
+        }
         // Native USB/service init and resume can block for hundreds of ms; run
         // off the UI thread so a relaunch can't ANR the input dispatcher.
         Thread {
@@ -437,6 +470,9 @@ class MPVActivity : AppCompatActivity(), MPVLib.EventObserver, TouchGesturesObse
                 }
                 tracker.resetCalibration()
                 Startup.nativeImuResume()
+                lastImuSampleTimeMs = System.currentTimeMillis()
+                imuStallReported = false
+                imuWatchdog.post(imuWatchdogRunnable)
             } catch (e: Exception) {
                 Log.e(TAG, "Xreal start failed", e)
                 xrealControlRunning = false
@@ -444,8 +480,41 @@ class MPVActivity : AppCompatActivity(), MPVLib.EventObserver, TouchGesturesObse
         }.start()
     }
 
+    private fun startDirectImu() {
+        tracker.resetCalibration()
+        val reader = XrealDirectImu(this) { imuSample, t1 ->
+            if (tracker.calibrate(imuSample)) {
+                tracker.update(imuSample, t1)
+                val now = System.currentTimeMillis()
+                if (now - lastDirectUpdate >= 33) {
+                    val o = tracker.getRelativeOrientation()
+                    vr.onXrealInput(o.yaw, o.pitch, o.roll)
+                    lastDirectUpdate = now
+                }
+            } else {
+                vr.showCalibration(tracker.calibrationProgress)
+            }
+        }
+        xrealDirectImu = reader
+        Thread {
+            if (!reader.start()) {
+                Log.e(TAG, "Direct IMU start failed")
+                xrealControlRunning = false
+            }
+        }.start()
+    }
+
     private fun stopXrealControl() {
         xrealControlRunning = false
+        imuWatchdog.removeCallbacks(imuWatchdogRunnable)
+        if (useDirectImu) {
+            val reader = xrealDirectImu
+            xrealDirectImu = null
+            Thread {
+                try { reader?.stop() } catch (e: Exception) { Log.e(TAG, "Direct IMU stop failed", e) }
+            }.start()
+            return
+        }
         Thread {
             try {
                 Startup.nativeImuPause()
@@ -562,6 +631,8 @@ class MPVActivity : AppCompatActivity(), MPVLib.EventObserver, TouchGesturesObse
             try { unregisterReceiver(it) } catch (_: Exception) {}
             xrealUsbReceiver = null
         }
+        try { xrealDirectImu?.stop() } catch (_: Exception) {}
+        xrealDirectImu = null
         destroyXrealLibrary()
 
         // Suppress any further callbacks

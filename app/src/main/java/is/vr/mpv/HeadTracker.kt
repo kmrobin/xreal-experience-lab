@@ -211,9 +211,10 @@ class HeadTracker {
         }
 
         private fun wrapAngle(angle: Float): Float {
-            var a = angle
-            while (a >  180f) a -= 360f
-            while (a < -180f) a += 360f
+            if (!angle.isFinite()) return 0f
+            var a = angle % 360f
+            if (a >  180f) a -= 360f
+            else if (a < -180f) a += 360f
             return a
         }
     }
@@ -251,9 +252,10 @@ class HeadTracker {
         }
 
         private fun wrapAngle(angle: Float): Float {
-            var a = angle
-            while (a >  180f) a -= 360f
-            while (a < -180f) a += 360f
+            if (!angle.isFinite()) return 0f
+            var a = angle % 360f
+            if (a >  180f) a -= 360f
+            else if (a < -180f) a += 360f
             return a
         }
     }
@@ -263,9 +265,10 @@ class HeadTracker {
     // -------------------------------------------------------------------------
 
     private fun wrapAngle(angle: Float): Float {
-        var a = angle
-        while (a >  180f) a -= 360f
-        while (a < -180f) a += 360f
+        if (!angle.isFinite()) return 0f
+        var a = angle % 360f
+        if (a >  180f) a -= 360f
+        else if (a < -180f) a += 360f
         return a
     }
 }

@@ -26,7 +26,7 @@ class XrealDirectImu(
         const val TAG = "XrealDirectImu"
         const val VENDOR_ID = 13080          // 0x3318
         const val IMU_INTERFACE_ID = 0       // HID sensor/control interface
-        const val READ_TIMEOUT_MS = 1000
+        const val READ_TIMEOUT_MS = 20
     }
 
     @Volatile private var running = false
@@ -75,8 +75,48 @@ class XrealDirectImu(
         Log.i(TAG, "Claimed interface ${intf.id}; IN=0x%02x OUT=%s".format(
             inEp.address, outEp?.let { "0x%02x".format(it.address) } ?: "none"))
 
+        dumpDescriptors(conn, intf)
+        tryStandardHidEnable(conn, intf)
+
         thread = Thread { readLoop(conn, inEp, outEp) }.also { it.start() }
         return true
+    }
+
+    /** Standard HID requests that can wake a vendor interrupt-IN stream. */
+    private fun tryStandardHidEnable(conn: UsbDeviceConnection, intf: UsbInterface) {
+        // SET_IDLE(duration=0, report=0): report only on change / stream freely.
+        val idle = conn.controlTransfer(0x21, 0x0A, 0x0000, intf.id, null, 0, 1000)
+        Log.i(TAG, "SET_IDLE -> $idle")
+        // GET_REPORT(Input, id 0): log the returned payload to inspect the format.
+        val buf = ByteArray(1024)
+        val get = conn.controlTransfer(0xA1, 0x01, 0x0100, intf.id, buf, buf.size, 1000)
+        Log.i(TAG, "GET_REPORT(Input) -> $get")
+        if (get > 0) logHex("GET_REPORT payload", buf, get)
+    }
+
+    /** Fetch and log the HID report descriptor so the report layout can be decoded. */
+    private fun dumpDescriptors(conn: UsbDeviceConnection, intf: UsbInterface) {
+        // Raw USB descriptors (device + config) as seen by the host.
+        val raw = conn.rawDescriptors
+        if (raw != null) logHex("raw USB descriptors", raw, raw.size)
+
+        // HID report descriptor: GET_DESCRIPTOR(type=0x22) on the interface.
+        val buf = ByteArray(4096)
+        val n = conn.controlTransfer(0x81, 0x06, 0x22 shl 8, intf.id, buf, buf.size, 2000)
+        if (n > 0) logHex("HID report descriptor (intf ${intf.id})", buf, n)
+        else Log.w(TAG, "HID report descriptor fetch failed ($n)")
+    }
+
+    private fun logHex(label: String, b: ByteArray, len: Int) {
+        Log.i(TAG, "$label: $len bytes")
+        var i = 0
+        while (i < len) {
+            val end = (i + 32).coerceAtMost(len)
+            val sb = StringBuilder()
+            for (j in i until end) sb.append("%02x ".format(b[j]))
+            Log.i(TAG, "  [%04d] %s".format(i, sb.toString().trim()))
+            i = end
+        }
     }
 
     fun stop() {
@@ -128,15 +168,28 @@ class XrealDirectImu(
                 }
             } else {
                 emptyStreak++
-                // If nothing streams unsolicited, the device likely needs an
-                // enable command on the OUT endpoint. Log so we know to probe.
+                // Interrupt IN is silent: fall back to polling GET_REPORT, which
+                // returned data during enable. Log samples to see if they are
+                // live IMU values (they should change as the glasses move).
                 if (emptyStreak == 2 && outEp != null) {
-                    Log.w(TAG, "No unsolicited data after ${emptyStreak}s; " +
-                        "device probably needs an enable command on OUT 0x%02x".format(outEp.address))
+                    Log.w(TAG, "No unsolicited data; polling GET_REPORT instead")
                 }
+                pollReport(conn)
             }
         }
         Log.i(TAG, "Read loop stopped after $packetCount packets")
+    }
+
+    private var pollCount = 0
+    private val pollBuf = ByteArray(1024)
+    private fun pollReport(conn: UsbDeviceConnection) {
+        val n = conn.controlTransfer(0xA1, 0x01, 0x0100, IMU_INTERFACE_ID, pollBuf, pollBuf.size, 500)
+        if (n > 0) {
+            pollCount++
+            if (pollCount <= 40 || pollCount % 100 == 0) {
+                Log.i(TAG, "poll #$pollCount len=$n : ${hex(pollBuf, n)}")
+            }
+        }
     }
 
     private fun hex(b: ByteArray, len: Int): String {
