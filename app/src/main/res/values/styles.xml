@@ -55,4 +55,13 @@
     <style name="Preference.SwitchPreferenceCompat" parent="Preference.SwitchPreferenceCompat.Material" tools:override="true">
         <item name="android:widgetLayout">@layout/material_preferences_switch</item>
     </style>
+
+    <!-- Experience Lab (persona hub + catalog screens) -->
+    <style name="Theme.ExperienceLab" parent="Theme.Material3.Dark.NoActionBar">
+        <item name="colorPrimary">#B36BBA</item>
+        <item name="colorOnPrimary">#FFFFFF</item>
+        <item name="android:statusBarColor">#1A0B1A</item>
+        <item name="android:navigationBarColor">#1A0B1A</item>
+        <item name="android:windowBackground">@drawable/bg_hub_gradient</item>
+    </style>
 </resources>

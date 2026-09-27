@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<style>
+  html, body { margin: 0; height: 100%; background: #000; overflow: hidden; }
+  model-viewer { width: 100vw; height: 100vh; background: #000; --poster-color: #000000; }
+  #msg {
+    position: absolute; top: 50%; left: 0; right: 0; transform: translateY(-50%);
+    text-align: center; color: #C8B6D0; font-family: -apple-system, Roboto, sans-serif;
+    padding: 24px; font-size: 16px;
+  }
+</style>
+<script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
+</head>
+<body>
+<model-viewer id="mv"
+    camera-controls
+    touch-action="none"
+    interaction-prompt="none"
+    shadow-intensity="1"
+    exposure="1"
+    auto-rotate
+    auto-rotate-delay="4000"
+    camera-orbit="0deg 75deg 105%"
+    min-camera-orbit="auto 0deg auto"
+    max-camera-orbit="auto 180deg auto">
+</model-viewer>
+<div id="msg">Loading model…</div>
+<script>
+  const mv = document.getElementById('mv');
+  const msg = document.getElementById('msg');
+  function loadModel(src) {
+    msg.style.display = 'block';
+    msg.textContent = 'Loading model…';
+    mv.src = src;
+  }
+  mv.addEventListener('load', function () { msg.style.display = 'none'; });
+  mv.addEventListener('error', function () {
+    msg.style.display = 'block';
+    msg.textContent = 'Could not load this model. Check the network or add a .glb under assets/models/.';
+  });
+  // Head-tracking hook (yaw/pitch in degrees) — drives the orbit camera.
+  function setOrbit(yawDeg, pitchDeg) {
+    const phi = Math.max(1, Math.min(179, 90 - pitchDeg));
+    mv.cameraOrbit = yawDeg + 'deg ' + phi + 'deg auto';
+  }
+</script>
+</body>
+</html>

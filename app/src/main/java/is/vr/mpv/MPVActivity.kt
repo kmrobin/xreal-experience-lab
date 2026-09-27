@@ -543,6 +543,12 @@ class MPVActivity : AppCompatActivity(), MPVLib.EventObserver, TouchGesturesObse
         // Init controls to be hidden and view fullscreen
         hideControls()
 
+        // Scene Reviewer sessions get an always-visible exit back to the list.
+        if (intent.getBooleanExtra("show_exit", false)) {
+            binding.exitSceneButton.visibility = View.VISIBLE
+            binding.exitSceneButton.setOnClickListener { finish() }
+        }
+
         // Initialize listeners for the player view
         initListeners()
 

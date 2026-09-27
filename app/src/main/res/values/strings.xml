@@ -204,4 +204,26 @@
     <!-- File picker -->
     <string name="nnf_name">Name</string>
     <string name="nnf_permission_external_write_denied">Permission to access file system denied</string>
+
+    <!-- Experience Lab -->
+    <string name="app_name">ExperienceLab</string>
+    <string name="hub_eyebrow">Experience Lab</string>
+    <string name="hub_title">Welcome</string>
+    <string name="hub_subtitle">Review products and step into immersive scenes on your XREAL One glasses.</string>
+    <string name="hub_choose_persona">Choose your experience</string>
+    <string name="hub_footer">Powered by Adobe + Xreal</string>
+    <string name="persona_product">Product Reviewer</string>
+    <string name="persona_product_desc">Inspect 3D products up close — orbit and zoom to review every detail.</string>
+    <string name="persona_scene">Scene Reviewer</string>
+    <string name="persona_scene_desc">Step inside 360° locations and look around naturally with your head.</string>
+    <string name="tile_cta">Enter →</string>
+    <string name="scene_list_title">Choose a scene</string>
+    <string name="scene_list_subtitle">Select a location, then look around by moving your head.</string>
+    <string name="scene_open_failed">Couldn\'t open this scene</string>
+    <string name="product_list_title">Choose a product</string>
+    <string name="product_list_subtitle">Select a product to inspect in 3D.</string>
+    <string name="viewer_back">Back</string>
+    <string name="viewer_hint">Drag to orbit · pinch to zoom</string>
+    <string name="nav_back">Back</string>
+    <string name="exit_scene">Exit Scene</string>
 </resources>

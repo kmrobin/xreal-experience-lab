@@ -10,3 +10,9 @@ local.properties
 *~
 .kotlin
 /app/default/
+# Rebrand: local source assets (downscaled copies are bundled under app/src/main/assets) and debug logs
+/files/
+usb-dump.txt
+*.log
+bo.txt
+build-out.txt

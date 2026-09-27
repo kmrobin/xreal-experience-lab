@@ -397,4 +397,26 @@
 
     </RelativeLayout>
 
+    <!-- Explicit, high-contrast exit shown only for Scene Reviewer sessions -->
+    <Button
+        android:id="@+id/exitSceneButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginStart="22dp"
+        android:layout_marginTop="22dp"
+        android:background="@drawable/bg_exit_button"
+        android:drawableStart="@drawable/ic_arrow_back"
+        android:drawablePadding="8dp"
+        android:paddingHorizontal="20dp"
+        android:paddingVertical="12dp"
+        android:text="@string/exit_scene"
+        android:textColor="#FFFFFF"
+        android:textStyle="bold"
+        android:textSize="15sp"
+        android:textAllCaps="false"
+        android:elevation="10dp"
+        android:visibility="gone" />
+
 </RelativeLayout>
