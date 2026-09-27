@@ -226,4 +226,6 @@
     <string name="viewer_hint">Drag to orbit · pinch to zoom</string>
     <string name="nav_back">Back</string>
     <string name="exit_scene">Exit Scene</string>
+    <string name="experience_cta">Click to Experience</string>
+    <string name="scene_exited">Scene Exited</string>
 </resources>

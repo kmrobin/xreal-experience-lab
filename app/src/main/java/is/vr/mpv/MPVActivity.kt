@@ -98,6 +98,7 @@ class MPVActivity : AppCompatActivity(), MPVLib.EventObserver, TouchGesturesObse
 
     private var xrealInitiated = false
     private var xrealControlRunning = false
+    private var sceneMode = false
     private var xrealUsbReceiver: BroadcastReceiver? = null
     // Bypass the unstable NRSDK: read the glasses IMU directly over USB.
     private val useDirectImu = false
@@ -113,8 +114,8 @@ class MPVActivity : AppCompatActivity(), MPVLib.EventObserver, TouchGesturesObse
                 imuStallReported = true
                 Toast.makeText(
                     this@MPVActivity,
-                    "Head tracking stopped. Reboot the glasses or phone, then relaunch to reset.",
-                    Toast.LENGTH_LONG
+                    getString(R.string.scene_exited),
+                    Toast.LENGTH_SHORT
                 ).show()
             }
             imuWatchdog.postDelayed(this, 1000)
@@ -545,8 +546,14 @@ class MPVActivity : AppCompatActivity(), MPVLib.EventObserver, TouchGesturesObse
 
         // Scene Reviewer sessions get an always-visible exit back to the list.
         if (intent.getBooleanExtra("show_exit", false)) {
+            sceneMode = true
             binding.exitSceneButton.visibility = View.VISIBLE
             binding.exitSceneButton.setOnClickListener { finish() }
+            binding.experienceButton.visibility = View.VISIBLE
+            binding.experienceButton.setOnClickListener {
+                toggleXrealControl()
+                binding.experienceButton.visibility = View.GONE
+            }
         }
 
         // Initialize listeners for the player view
@@ -1006,7 +1013,7 @@ class MPVActivity : AppCompatActivity(), MPVLib.EventObserver, TouchGesturesObse
 
         if (binding.controls.visibility != View.VISIBLE) {
             binding.controls.visibility = View.VISIBLE
-            binding.topControls.visibility = View.VISIBLE
+            binding.topControls.visibility = if (sceneMode) View.GONE else View.VISIBLE
 
             if (this.statsFPS) {
                 updateStats()

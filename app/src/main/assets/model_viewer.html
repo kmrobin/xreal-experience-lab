@@ -46,6 +46,27 @@
     const phi = Math.max(1, Math.min(179, 90 - pitchDeg));
     mv.cameraOrbit = yawDeg + 'deg ' + phi + 'deg auto';
   }
+
+  // DeX/glasses: the phone acts as a trackpad, so a single-finger swipe arrives
+  // as a mouse pointer *hover* (no button held) and model-viewer's drag-orbit
+  // never triggers. Rotate the model directly from that movement; touch input
+  // on the phone still uses model-viewer's native orbit.
+  let px = null, py = null;
+  mv.addEventListener('pointermove', function (e) {
+    if (e.pointerType === 'touch') return;
+    if (px !== null) {
+      const dx = e.clientX - px, dy = e.clientY - py;
+      const o = mv.getCameraOrbit();
+      const theta = o.theta * 180 / Math.PI + dx * 0.4;
+      let phi = o.phi * 180 / Math.PI - dy * 0.4;
+      phi = Math.max(5, Math.min(175, phi));
+      mv.cameraOrbit = theta + 'deg ' + phi + 'deg ' + o.radius + 'm';
+    }
+    px = e.clientX; py = e.clientY;
+  });
+  ['pointerleave', 'pointerup', 'pointercancel'].forEach(function (ev) {
+    mv.addEventListener(ev, function () { px = null; py = null; });
+  });
 </script>
 </body>
 </html>

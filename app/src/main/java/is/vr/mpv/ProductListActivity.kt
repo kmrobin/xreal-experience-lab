@@ -3,7 +3,7 @@ package `is`.vr.mpv
 import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.GridLayoutManager
 import `is`.vr.mpv.databinding.ActivityExperienceListBinding
 
 /** Product Reviewer: pick a 3D product, then inspect it by orbiting the model. */
@@ -21,12 +21,10 @@ class ProductListActivity : AppCompatActivity() {
         binding.listSubtitle.text = getString(R.string.product_list_subtitle)
         binding.backButton.setOnClickListener { finish() }
 
-        val products = ExperienceCatalog.products
-        binding.recycler.layoutManager = LinearLayoutManager(this)
-        binding.recycler.adapter = ExperienceCardAdapter(
-            this,
-            products.map { CardEntry(it.title, it.subtitle, null) },
-        ) { pos -> openProduct(products[pos]) }
+        binding.recycler.layoutManager = GridLayoutManager(this, 2)
+        binding.recycler.adapter = ProductTileAdapter(ExperienceCatalog.products) { product ->
+            openProduct(product)
+        }
     }
 
     private fun openProduct(product: ProductItem) {

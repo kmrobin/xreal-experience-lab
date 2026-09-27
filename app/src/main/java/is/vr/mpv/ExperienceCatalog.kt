@@ -15,6 +15,7 @@ data class ProductItem(
     val title: String,
     val subtitle: String,
     val modelSrc: String,     // URL or file:///android_asset/models/<name>.glb
+    val emoji: String,        // shown on the product tile
 )
 
 /**
@@ -55,20 +56,30 @@ object ExperienceCatalog {
         ProductItem(
             id = "iphone_17_pro",
             title = "iPhone 17 Pro",
-            subtitle = "6.3\" flagship · orbit to inspect",
+            subtitle = "6.3\" flagship review",
             modelSrc = "models/iphone_17_pro.glb",
+            emoji = "\uD83D\uDCF1",
         ),
         ProductItem(
             id = "iphone_duo",
             title = "iPhone Duo",
-            subtitle = "Dual-screen concept · review the design",
+            subtitle = "Dual-screen concept",
             modelSrc = "models/iphone_duo.glb",
+            emoji = "\uD83D\uDCF1",
+        ),
+        ProductItem(
+            id = "airpods",
+            title = "AirPods",
+            subtitle = "Audio product review",
+            modelSrc = "models/airpods.glb",
+            emoji = "\uD83C\uDFA7",
         ),
         ProductItem(
             id = "astronaut",
             title = "Astronaut",
-            subtitle = "Sample model · streamed online",
+            subtitle = "Sample 3D model",
             modelSrc = "https://modelviewer.dev/shared-assets/models/Astronaut.glb",
+            emoji = "\uD83D\uDE80",
         ),
     )
 }
