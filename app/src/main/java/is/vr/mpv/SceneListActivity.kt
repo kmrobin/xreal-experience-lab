@@ -54,6 +54,8 @@ class SceneListActivity : AppCompatActivity() {
         i.putExtra("filepath", file.absolutePath)
         i.putExtra("show_exit", true)
         i.putExtra("scene_audio", scene.audioAsset)
+        i.putExtra("scene_id", scene.id)
+        i.putExtra("scene_category", scene.category)
         startActivity(i)
     }
 

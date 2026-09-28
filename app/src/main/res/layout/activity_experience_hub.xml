@@ -16,20 +16,10 @@
         android:paddingBottom="32dp">
 
         <TextView
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/hub_eyebrow"
-            android:letterSpacing="0.22"
-            android:textAllCaps="true"
-            android:textColor="#D9A8E2"
-            android:textSize="13sp"
-            android:textStyle="bold" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:text="@string/hub_title"
+            android:gravity="center"
             android:textColor="#FFFFFF"
             android:textSize="38sp"
             android:textStyle="bold" />
@@ -50,20 +40,20 @@
             android:layout_marginTop="36dp">
 
             <include
-                android:id="@+id/tileProduct"
-                layout="@layout/tile_product" />
-
-            <include
-                android:id="@+id/tileScene"
-                layout="@layout/tile_scene" />
-
-            <include
                 android:id="@+id/tileTourist"
                 layout="@layout/tile_tourist" />
 
             <include
                 android:id="@+id/tileShopping"
                 layout="@layout/tile_shopping" />
+
+            <include
+                android:id="@+id/tileProduct"
+                layout="@layout/tile_product" />
+
+            <include
+                android:id="@+id/tileScene"
+                layout="@layout/tile_scene" />
         </LinearLayout>
 
         <TextView

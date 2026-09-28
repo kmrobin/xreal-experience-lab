@@ -60,6 +60,21 @@
             android:layout_marginTop="6dp"
             android:textColor="#B9A7C2"
             android:textSize="15sp" />
+
+        <Button
+            android:id="@+id/browseGalleryButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:background="@drawable/bg_experience_button"
+            android:paddingVertical="16dp"
+            android:text="@string/browse_gallery"
+            android:textColor="#FFFFFF"
+            android:textStyle="bold"
+            android:textSize="16sp"
+            android:textAllCaps="false"
+            android:elevation="6dp"
+            android:visibility="gone" />
     </LinearLayout>
 
     <androidx.recyclerview.widget.RecyclerView

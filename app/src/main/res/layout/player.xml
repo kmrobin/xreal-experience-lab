@@ -395,28 +395,69 @@
             android:visibility="gone"
             app:srcCompat="@drawable/ic_lock_open_24dp" />
 
-    </RelativeLayout>
+        <!-- Scene navigation row sits just above the player controls -->
+        <Button
+            android:id="@+id/previousSceneButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_above="@id/controls"
+            android:layout_alignParentStart="true"
+            android:layout_marginStart="24dp"
+            android:layout_marginBottom="8dp"
+            android:background="@drawable/bg_experience_button"
+            android:drawableStart="@drawable/ic_skip_previous_black_24dp"
+            android:drawablePadding="8dp"
+            android:paddingHorizontal="20dp"
+            android:paddingVertical="12dp"
+            android:text="@string/previous_scene"
+            android:textColor="#FFFFFF"
+            android:textStyle="bold"
+            android:textSize="15sp"
+            android:textAllCaps="false"
+            android:elevation="10dp"
+            android:visibility="gone" />
 
-    <!-- Explicit, high-contrast exit shown only for Scene Reviewer sessions -->
-    <Button
-        android:id="@+id/exitSceneButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginBottom="28dp"
-        android:background="@drawable/bg_exit_button"
-        android:drawableStart="@drawable/ic_arrow_back"
-        android:drawablePadding="8dp"
-        android:paddingHorizontal="20dp"
-        android:paddingVertical="12dp"
-        android:text="@string/exit_scene"
-        android:textColor="#FFFFFF"
-        android:textStyle="bold"
-        android:textSize="15sp"
-        android:textAllCaps="false"
-        android:elevation="10dp"
-        android:visibility="gone" />
+        <Button
+            android:id="@+id/exitSceneButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_above="@id/controls"
+            android:layout_centerHorizontal="true"
+            android:layout_marginBottom="8dp"
+            android:background="@drawable/bg_exit_button"
+            android:paddingHorizontal="30dp"
+            android:paddingVertical="12dp"
+            android:text="@string/exit_scene_short"
+            android:textColor="#FFFFFF"
+            android:textStyle="bold"
+            android:textSize="15sp"
+            android:textAllCaps="true"
+            android:letterSpacing="0.12"
+            android:elevation="10dp"
+            android:visibility="gone" />
+
+        <Button
+            android:id="@+id/nextSceneButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_above="@id/controls"
+            android:layout_alignParentEnd="true"
+            android:layout_marginEnd="24dp"
+            android:layout_marginBottom="8dp"
+            android:background="@drawable/bg_experience_button"
+            android:drawableEnd="@drawable/ic_skip_next_black_24dp"
+            android:drawablePadding="8dp"
+            android:paddingHorizontal="20dp"
+            android:paddingVertical="12dp"
+            android:text="@string/next_scene"
+            android:textColor="#FFFFFF"
+            android:textStyle="bold"
+            android:textSize="15sp"
+            android:textAllCaps="false"
+            android:elevation="10dp"
+            android:visibility="gone" />
+
+    </RelativeLayout>
 
     <!-- Prominent "start head tracking" call-to-action, centered on screen -->
     <Button

@@ -18,6 +18,7 @@ data class ProductItem(
     val subtitle: String,
     val modelSrc: String,     // URL or file:///android_asset/models/<name>.glb
     val emoji: String,        // shown on the product tile
+    val shopping: Boolean = false,   // also shown in the Shopping section
 )
 
 /**
@@ -46,14 +47,6 @@ object ExperienceCatalog {
             category = "tourist",
         ),
         SceneItem(
-            id = "kashmir_1",
-            title = "Kashmir Valley",
-            subtitle = "Himalayan 360\u00b0 vista",
-            imageAsset = "scenes/scene_kashmir1.png",
-            thumbAsset = "scenes/thumbs/scene_kashmir1.jpg",
-            category = "tourist",
-        ),
-        SceneItem(
             id = "kashmir_2",
             title = "Kashmir Highlands",
             subtitle = "Mountain landscape 360\u00b0 view",
@@ -68,6 +61,7 @@ object ExperienceCatalog {
             imageAsset = "scenes/scene_dc_plaza.jpg",
             thumbAsset = "scenes/thumbs/scene_dc_plaza.jpg",
             audioAsset = "audio/scene_dc_plaza.mp3",
+            category = "tourist",
         ),
         SceneItem(
             id = "living_room",
@@ -82,6 +76,7 @@ object ExperienceCatalog {
             subtitle = "Historic Alte Schachtschleuse",
             imageAsset = "scenes/scene_canal_lock.jpg",
             thumbAsset = "scenes/thumbs/scene_canal_lock.jpg",
+            category = "tourist",
         ),
         SceneItem(
             id = "bedroom",
@@ -123,6 +118,7 @@ object ExperienceCatalog {
             subtitle = "Athletic shoe review",
             modelSrc = "models/nike_shoe.glb",
             emoji = "\uD83D\uDC5F",
+            shopping = true,
         ),
         ProductItem(
             id = "air_jordan_dior",
@@ -130,6 +126,7 @@ object ExperienceCatalog {
             subtitle = "Low-top sneaker review",
             modelSrc = "models/air_jordan_dior.glb",
             emoji = "\uD83D\uDC5F",
+            shopping = true,
         ),
         ProductItem(
             id = "astronaut",

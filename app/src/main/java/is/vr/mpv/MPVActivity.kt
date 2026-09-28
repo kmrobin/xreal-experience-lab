@@ -557,6 +557,13 @@ class MPVActivity : AppCompatActivity(), MPVLib.EventObserver, TouchGesturesObse
                 binding.experienceButton.visibility = View.GONE
                 startSceneMusic()
             }
+            // "Next Scene" is only meaningful when launched from a catalog list.
+            if (intent.hasExtra("scene_id")) {
+                binding.nextSceneButton.visibility = View.VISIBLE
+                binding.nextSceneButton.setOnClickListener { openNextScene() }
+                binding.previousSceneButton.visibility = View.VISIBLE
+                binding.previousSceneButton.setOnClickListener { openPrevScene() }
+            }
         }
 
         // Initialize listeners for the player view
@@ -666,6 +673,44 @@ class MPVActivity : AppCompatActivity(), MPVLib.EventObserver, TouchGesturesObse
         sceneMusic = null
     }
 
+    // Advances to the next/previous scene in the same catalog category, wrapping around.
+    private fun openNextScene() = openRelativeScene(1)
+    private fun openPrevScene() = openRelativeScene(-1)
+
+    private fun openRelativeScene(step: Int) {
+        val id = intent.getStringExtra("scene_id") ?: return
+        val category = intent.getStringExtra("scene_category") ?: "scene"
+        val list = ExperienceCatalog.scenes.filter { it.category == category }
+        val idx = list.indexOfFirst { it.id == id }
+        if (idx < 0) return
+        val target = list[((idx + step) % list.size + list.size) % list.size]
+        val file = copySceneAssetToCache(target.imageAsset) ?: return
+        // MPVActivity is singleTask; this is delivered to onNewIntent(), which
+        // reloads the panorama in place instead of starting a new instance.
+        val i = Intent(this, MPVActivity::class.java)
+            .putExtra("filepath", file.absolutePath)
+            .putExtra("show_exit", true)
+            .putExtra("scene_audio", target.audioAsset)
+            .putExtra("scene_id", target.id)
+            .putExtra("scene_category", target.category)
+        startActivity(i)
+    }
+
+    private fun copySceneAssetToCache(assetPath: String): File? {
+        return try {
+            val out = File(cacheDir, assetPath.substringAfterLast('/'))
+            if (!out.exists() || out.length() == 0L) {
+                assets.open(assetPath).use { input ->
+                    out.outputStream().use { input.copyTo(it) }
+                }
+            }
+            out
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed to copy next scene asset", e)
+            null
+        }
+    }
+
     override fun onDestroy() {
         Log.v(TAG, "Exiting.")
 
@@ -709,6 +754,18 @@ class MPVActivity : AppCompatActivity(), MPVLib.EventObserver, TouchGesturesObse
         // file to be played from another app
         val filepath = intent?.let { parsePathFromIntent(it) }
         if (filepath == null) {
+            return
+        }
+
+        // Scene navigation (Next Scene) reuses this singleTask instance: swap
+        // the panorama and ambient track in place without recreating anything.
+        if (intent.getBooleanExtra("show_exit", false)) {
+            setIntent(intent)
+            MPVLib.command(arrayOf("loadfile", filepath))
+            if (sceneMusic != null) {
+                stopSceneMusic()
+                startSceneMusic()
+            }
             return
         }
 

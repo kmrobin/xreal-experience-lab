@@ -16,20 +16,10 @@
         android:paddingBottom="32dp">
 
         <TextView
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/hub_eyebrow"
-            android:letterSpacing="0.22"
-            android:textAllCaps="true"
-            android:textColor="#D9A8E2"
-            android:textSize="14sp"
-            android:textStyle="bold" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:text="@string/hub_title"
+            android:gravity="center"
             android:textColor="#FFFFFF"
             android:textSize="44sp"
             android:textStyle="bold" />
@@ -56,16 +46,16 @@
                 android:layout_weight="0.5" />
 
             <include
-                android:id="@+id/tileProduct"
-                layout="@layout/tile_product"
+                android:id="@+id/tileTourist"
+                layout="@layout/tile_tourist"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="4"
                 android:layout_marginEnd="20dp" />
 
             <include
-                android:id="@+id/tileScene"
-                layout="@layout/tile_scene"
+                android:id="@+id/tileShopping"
+                layout="@layout/tile_shopping"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="4" />
@@ -88,16 +78,16 @@
                 android:layout_weight="0.5" />
 
             <include
-                android:id="@+id/tileTourist"
-                layout="@layout/tile_tourist"
+                android:id="@+id/tileProduct"
+                layout="@layout/tile_product"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="4"
                 android:layout_marginEnd="20dp" />
 
             <include
-                android:id="@+id/tileShopping"
-                layout="@layout/tile_shopping"
+                android:id="@+id/tileScene"
+                layout="@layout/tile_scene"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="4" />

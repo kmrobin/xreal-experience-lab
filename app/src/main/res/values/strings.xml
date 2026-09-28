@@ -230,6 +230,12 @@
     <string name="scene_open_failed">Couldn\'t open this scene</string>
     <string name="product_list_title">Choose a product</string>
     <string name="product_list_subtitle">Select a product to inspect in 3D.</string>
+    <string name="shopping_list_title">Shop products</string>
+    <string name="shopping_list_subtitle">Pick a product to review, or browse your gallery.</string>
+    <string name="browse_gallery">+  Click to Browse Gallery</string>
+    <string name="next_scene">Next Scene</string>
+    <string name="previous_scene">Previous Scene</string>
+    <string name="exit_scene_short">Exit</string>
     <string name="viewer_back">Back</string>
     <string name="viewer_hint">Drag to orbit · pinch to zoom</string>
     <string name="nav_back">Back</string>
