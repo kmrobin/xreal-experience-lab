@@ -18,12 +18,20 @@ class SceneListActivity : AppCompatActivity() {
         binding = ActivityExperienceListBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        binding.listEyebrow.text = getString(R.string.persona_scene)
-        binding.listTitle.text = getString(R.string.scene_list_title)
-        binding.listSubtitle.text = getString(R.string.scene_list_subtitle)
+        val tourist = intent.getStringExtra(EXTRA_CATEGORY) == "tourist"
+        if (tourist) {
+            binding.listEyebrow.text = getString(R.string.persona_tourist)
+            binding.listTitle.text = getString(R.string.tourist_list_title)
+            binding.listSubtitle.text = getString(R.string.tourist_list_subtitle)
+        } else {
+            binding.listEyebrow.text = getString(R.string.persona_scene)
+            binding.listTitle.text = getString(R.string.scene_list_title)
+            binding.listSubtitle.text = getString(R.string.scene_list_subtitle)
+        }
         binding.backButton.setOnClickListener { finish() }
 
-        val scenes = ExperienceCatalog.scenes
+        val category = if (tourist) "tourist" else "scene"
+        val scenes = ExperienceCatalog.scenes.filter { it.category == category }
         binding.recycler.layoutManager = LinearLayoutManager(this)
         binding.recycler.adapter = ExperienceCardAdapter(
             this,
@@ -32,7 +40,7 @@ class SceneListActivity : AppCompatActivity() {
 
         // Deep link may ask to open a specific scene directly.
         intent.getStringExtra(EXTRA_OPEN_SCENE_ID)?.let { id ->
-            scenes.firstOrNull { it.id == id }?.let { openScene(it) }
+            ExperienceCatalog.scenes.firstOrNull { it.id == id }?.let { openScene(it) }
         }
     }
 
@@ -66,5 +74,6 @@ class SceneListActivity : AppCompatActivity() {
 
     companion object {
         const val EXTRA_OPEN_SCENE_ID = "open_scene_id"
+        const val EXTRA_CATEGORY = "category"
     }
 }

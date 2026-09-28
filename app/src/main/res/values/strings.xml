@@ -225,6 +225,8 @@
     <string name="tile_cta">Enter →</string>
     <string name="scene_list_title">Choose a scene</string>
     <string name="scene_list_subtitle">Select a location, then look around by moving your head.</string>
+    <string name="tourist_list_title">Choose a destination</string>
+    <string name="tourist_list_subtitle">Select a landmark, then look around by moving your head.</string>
     <string name="scene_open_failed">Couldn\'t open this scene</string>
     <string name="product_list_title">Choose a product</string>
     <string name="product_list_subtitle">Select a product to inspect in 3D.</string>

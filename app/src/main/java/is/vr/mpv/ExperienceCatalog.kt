@@ -8,6 +8,7 @@ data class SceneItem(
     val imageAsset: String,   // e.g. "scenes/scene_dc_plaza.jpg"
     val thumbAsset: String,   // e.g. "scenes/thumbs/scene_dc_plaza.jpg"
     val audioAsset: String = "audio/scene_ambient.mp3",
+    val category: String = "scene",   // "scene" (reviewer) or "tourist"
 )
 
 /** A 3D product the user can inspect by orbiting the model. */
@@ -31,9 +32,34 @@ object ExperienceCatalog {
             id = "taj_mahal",
             title = "Taj Mahal",
             subtitle = "Agra \u00b7 UNESCO World Heritage",
-            imageAsset = "scenes/scene_taj_mahal.jpg",
+            imageAsset = "scenes/scene_taj_mahal.png",
             thumbAsset = "scenes/thumbs/scene_taj_mahal.jpg",
             audioAsset = "audio/scene_taj_mahal.mp3",
+            category = "tourist",
+        ),
+        SceneItem(
+            id = "science_city",
+            title = "Science City, Kolkata",
+            subtitle = "Convention Centre \u00b7 360\u00b0 view",
+            imageAsset = "scenes/scene_science_city.jpg",
+            thumbAsset = "scenes/thumbs/scene_science_city.jpg",
+            category = "tourist",
+        ),
+        SceneItem(
+            id = "kashmir_1",
+            title = "Kashmir Valley",
+            subtitle = "Himalayan 360\u00b0 vista",
+            imageAsset = "scenes/scene_kashmir1.png",
+            thumbAsset = "scenes/thumbs/scene_kashmir1.jpg",
+            category = "tourist",
+        ),
+        SceneItem(
+            id = "kashmir_2",
+            title = "Kashmir Highlands",
+            subtitle = "Mountain landscape 360\u00b0 view",
+            imageAsset = "scenes/scene_kashmir2.png",
+            thumbAsset = "scenes/thumbs/scene_kashmir2.jpg",
+            category = "tourist",
         ),
         SceneItem(
             id = "dc_plaza",
@@ -92,10 +118,10 @@ object ExperienceCatalog {
             emoji = "\uD83C\uDFA7",
         ),
         ProductItem(
-            id = "soap_shoe",
-            title = "Soap Shoe",
-            subtitle = "Sonic Frontiers sneaker",
-            modelSrc = "models/soap_shoe.glb",
+            id = "nike_shoe",
+            title = "Nike Sneaker",
+            subtitle = "Athletic shoe review",
+            modelSrc = "models/nike_shoe.glb",
             emoji = "\uD83D\uDC5F",
         ),
         ProductItem(

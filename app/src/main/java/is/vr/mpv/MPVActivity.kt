@@ -555,8 +555,8 @@ class MPVActivity : AppCompatActivity(), MPVLib.EventObserver, TouchGesturesObse
             binding.experienceButton.setOnClickListener {
                 toggleXrealControl()
                 binding.experienceButton.visibility = View.GONE
+                startSceneMusic()
             }
-            startSceneMusic()
         }
 
         // Initialize listeners for the player view

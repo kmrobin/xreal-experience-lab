@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.os.Bundle
 import android.webkit.WebResourceRequest
 import android.webkit.WebResourceResponse
+import android.webkit.WebSettings
 import android.webkit.WebView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.webkit.WebViewAssetLoader
@@ -40,6 +41,7 @@ class ProductViewerActivity : AppCompatActivity() {
             domStorageEnabled = true
             allowFileAccess = false
             mediaPlaybackRequiresUserGesture = false
+            cacheMode = WebSettings.LOAD_NO_CACHE
         }
         binding.webView.setBackgroundColor(0xFF000000.toInt())
         binding.webView.webViewClient = object : WebViewClientCompat() {
