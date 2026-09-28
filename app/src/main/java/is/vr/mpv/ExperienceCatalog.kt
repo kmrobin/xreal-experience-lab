@@ -82,6 +82,20 @@ object ExperienceCatalog {
             emoji = "\uD83C\uDFA7",
         ),
         ProductItem(
+            id = "soap_shoe",
+            title = "Soap Shoe",
+            subtitle = "Sonic Frontiers sneaker",
+            modelSrc = "models/soap_shoe.glb",
+            emoji = "\uD83D\uDC5F",
+        ),
+        ProductItem(
+            id = "air_jordan_dior",
+            title = "Air Jordan 1 Dior",
+            subtitle = "Low-top sneaker review",
+            modelSrc = "models/air_jordan_dior.glb",
+            emoji = "\uD83D\uDC5F",
+        ),
+        ProductItem(
             id = "astronaut",
             title = "Astronaut",
             subtitle = "Sample 3D model",
