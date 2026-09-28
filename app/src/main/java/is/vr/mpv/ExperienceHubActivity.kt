@@ -2,6 +2,7 @@ package `is`.vr.mpv
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import `is`.vr.mpv.databinding.ActivityExperienceHubBinding
@@ -28,5 +29,35 @@ class ExperienceHubActivity : AppCompatActivity() {
         binding.tileShopping.root.setOnClickListener {
             Toast.makeText(this, R.string.coming_soon, Toast.LENGTH_SHORT).show()
         }
+
+        // Cold start via a deep link.
+        handleDeepLink(intent)
+    }
+
+    // Deep link while the hub is already running / in the background (singleTask).
+    override fun onNewIntent(intent: Intent?) {
+        super.onNewIntent(intent)
+        setIntent(intent)
+        handleDeepLink(intent)
+    }
+
+    private fun handleDeepLink(intent: Intent?) {
+        val uri = intent?.data ?: return
+        if (intent.action != Intent.ACTION_VIEW) return
+
+        val result = DeepLinkRouter.route(this, uri)
+        result.toastRes?.let { Toast.makeText(this, it, Toast.LENGTH_SHORT).show() }
+        result.intent?.let {
+            try {
+                startActivity(it)
+                Log.d(TAG, "Navigated to ${it.component?.shortClassName}")
+            } catch (e: Exception) {
+                Log.e(TAG, "Deep-link navigation failed for $uri", e)
+            }
+        }
+    }
+
+    private companion object {
+        const val TAG = "ExperienceHub"
     }
 }

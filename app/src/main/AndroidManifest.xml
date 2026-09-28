@@ -198,6 +198,7 @@
         <activity
             android:name=".ExperienceHubActivity"
             android:configChanges="orientation|screenSize"
+            android:launchMode="singleTask"
             android:theme="@style/Theme.ExperienceLab"
             android:exported="true">
             <intent-filter>
@@ -205,6 +206,15 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
                 <category android:name="android.intent.category.LEANBACK_LAUNCHER" />
+            </intent-filter>
+            <!-- Custom-scheme deep links, e.g. experiencelab://scene/12345 -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data android:scheme="experiencelab" />
             </intent-filter>
         </activity>
 

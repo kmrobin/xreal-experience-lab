@@ -29,6 +29,11 @@ class SceneListActivity : AppCompatActivity() {
             this,
             scenes.map { CardEntry(it.title, it.subtitle, it.thumbAsset) },
         ) { pos -> openScene(scenes[pos]) }
+
+        // Deep link may ask to open a specific scene directly.
+        intent.getStringExtra(EXTRA_OPEN_SCENE_ID)?.let { id ->
+            scenes.firstOrNull { it.id == id }?.let { openScene(it) }
+        }
     }
 
     private fun openScene(scene: SceneItem) {
@@ -56,5 +61,9 @@ class SceneListActivity : AppCompatActivity() {
         } catch (_: Exception) {
             null
         }
+    }
+
+    companion object {
+        const val EXTRA_OPEN_SCENE_ID = "open_scene_id"
     }
 }

@@ -221,6 +221,7 @@
     <string name="persona_shopping">Shopping</string>
     <string name="persona_shopping_desc">Browse and preview products in a virtual storefront.</string>
     <string name="coming_soon">Coming soon</string>
+    <string name="deeplink_invalid">Unsupported link</string>
     <string name="tile_cta">Enter →</string>
     <string name="scene_list_title">Choose a scene</string>
     <string name="scene_list_subtitle">Select a location, then look around by moving your head.</string>
