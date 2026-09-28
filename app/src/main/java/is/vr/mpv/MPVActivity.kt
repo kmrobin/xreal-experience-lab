@@ -19,6 +19,7 @@ import android.graphics.drawable.Icon
 import android.hardware.usb.UsbDevice
 import android.hardware.usb.UsbManager
 import android.media.AudioManager
+import android.media.MediaPlayer
 import android.net.Uri
 import android.os.*
 import android.preference.PreferenceManager
@@ -99,6 +100,7 @@ class MPVActivity : AppCompatActivity(), MPVLib.EventObserver, TouchGesturesObse
     private var xrealInitiated = false
     private var xrealControlRunning = false
     private var sceneMode = false
+    private var sceneMusic: MediaPlayer? = null
     private var xrealUsbReceiver: BroadcastReceiver? = null
     // Bypass the unstable NRSDK: read the glasses IMU directly over USB.
     private val useDirectImu = false
@@ -554,6 +556,7 @@ class MPVActivity : AppCompatActivity(), MPVLib.EventObserver, TouchGesturesObse
                 toggleXrealControl()
                 binding.experienceButton.visibility = View.GONE
             }
+            startSceneMusic()
         }
 
         // Initialize listeners for the player view
@@ -637,9 +640,35 @@ class MPVActivity : AppCompatActivity(), MPVLib.EventObserver, TouchGesturesObse
         finish()
     }
 
+    // Looping ambient audio while inside a scene.
+    private fun startSceneMusic() {
+        try {
+            val afd = assets.openFd("audio/scene_ambient.mp3")
+            sceneMusic = MediaPlayer().apply {
+                setDataSource(afd.fileDescriptor, afd.startOffset, afd.length)
+                afd.close()
+                isLooping = true
+                setVolume(0.35f, 0.35f)
+                setOnPreparedListener { start() }
+                prepareAsync()
+            }
+        } catch (e: Exception) {
+            Log.e(TAG, "Scene music failed to start", e)
+        }
+    }
+
+    private fun stopSceneMusic() {
+        sceneMusic?.let {
+            try { it.stop() } catch (_: Exception) {}
+            it.release()
+        }
+        sceneMusic = null
+    }
+
     override fun onDestroy() {
         Log.v(TAG, "Exiting.")
 
+        stopSceneMusic()
         xrealUsbReceiver?.let {
             try { unregisterReceiver(it) } catch (_: Exception) {}
             xrealUsbReceiver = null
@@ -819,11 +848,13 @@ class MPVActivity : AppCompatActivity(), MPVLib.EventObserver, TouchGesturesObse
     override fun onStart() {
         super.onStart()
         activityIsStopped = false
+        try { sceneMusic?.start() } catch (_: Exception) {}
     }
 
     override fun onStop() {
         super.onStop()
         activityIsStopped = true
+        try { sceneMusic?.pause() } catch (_: Exception) {}
     }
 
     override fun onResume() {
