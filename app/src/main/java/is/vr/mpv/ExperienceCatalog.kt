@@ -44,6 +44,7 @@ object ExperienceCatalog {
             subtitle = "Convention Centre \u00b7 360\u00b0 view",
             imageAsset = "scenes/scene_science_city.jpg",
             thumbAsset = "scenes/thumbs/scene_science_city.jpg",
+            audioAsset = "audio/scene_science_city.mp3",
             category = "tourist",
         ),
         SceneItem(
@@ -76,6 +77,7 @@ object ExperienceCatalog {
             subtitle = "Historic Alte Schachtschleuse",
             imageAsset = "scenes/scene_canal_lock.jpg",
             thumbAsset = "scenes/thumbs/scene_canal_lock.jpg",
+            audioAsset = "audio/scene_canal_lock.mp3",
             category = "tourist",
         ),
         SceneItem(
@@ -126,6 +128,22 @@ object ExperienceCatalog {
             subtitle = "Low-top sneaker review",
             modelSrc = "models/air_jordan_dior.glb",
             emoji = "\uD83D\uDC5F",
+            shopping = true,
+        ),
+        ProductItem(
+            id = "puma_shoe",
+            title = "Puma Purple Shoe",
+            subtitle = "3D-scanned sneaker",
+            modelSrc = "models/puma_shoe.glb",
+            emoji = "\uD83D\uDC5F",
+            shopping = true,
+        ),
+        ProductItem(
+            id = "nike_shoe_box",
+            title = "Nike Shoe Box",
+            subtitle = "Packaging preview",
+            modelSrc = "models/nike_shoe_box.glb",
+            emoji = "\uD83D\uDCE6",
             shopping = true,
         ),
         ProductItem(

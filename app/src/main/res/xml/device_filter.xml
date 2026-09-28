@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Xreal glasses (vendor id 0x3318 = 13080). Lets the OS auto-grant USB
+         access via a one-time "use by default" association. -->
+    <usb-device vendor-id="13080" />
+</resources>

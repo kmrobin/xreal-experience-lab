@@ -216,6 +216,15 @@
 
                 <data android:scheme="experiencelab" />
             </intent-filter>
+            <!-- Attaching the Xreal glasses offers a one-time "use by default"
+                 association, after which USB access is auto-granted and the
+                 in-scene permission prompt no longer appears. -->
+            <intent-filter>
+                <action android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED" />
+            </intent-filter>
+            <meta-data
+                android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED"
+                android:resource="@xml/device_filter" />
         </activity>
 
         <activity
