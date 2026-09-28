@@ -7,6 +7,7 @@ data class SceneItem(
     val subtitle: String,
     val imageAsset: String,   // e.g. "scenes/scene_dc_plaza.jpg"
     val thumbAsset: String,   // e.g. "scenes/thumbs/scene_dc_plaza.jpg"
+    val audioAsset: String = "audio/scene_ambient.mp3",
 )
 
 /** A 3D product the user can inspect by orbiting the model. */
@@ -27,11 +28,20 @@ object ExperienceCatalog {
 
     val scenes = listOf(
         SceneItem(
+            id = "taj_mahal",
+            title = "Taj Mahal",
+            subtitle = "Agra \u00b7 UNESCO World Heritage",
+            imageAsset = "scenes/scene_taj_mahal.jpg",
+            thumbAsset = "scenes/thumbs/scene_taj_mahal.jpg",
+            audioAsset = "audio/scene_taj_mahal.mp3",
+        ),
+        SceneItem(
             id = "dc_plaza",
             title = "Washington DC Plaza",
             subtitle = "Open-air people & places",
             imageAsset = "scenes/scene_dc_plaza.jpg",
             thumbAsset = "scenes/thumbs/scene_dc_plaza.jpg",
+            audioAsset = "audio/scene_dc_plaza.mp3",
         ),
         SceneItem(
             id = "living_room",

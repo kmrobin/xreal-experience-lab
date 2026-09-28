@@ -45,6 +45,7 @@ class SceneListActivity : AppCompatActivity() {
         val i = Intent(this, MPVActivity::class.java)
         i.putExtra("filepath", file.absolutePath)
         i.putExtra("show_exit", true)
+        i.putExtra("scene_audio", scene.audioAsset)
         startActivity(i)
     }
 

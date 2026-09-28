@@ -643,7 +643,8 @@ class MPVActivity : AppCompatActivity(), MPVLib.EventObserver, TouchGesturesObse
     // Looping ambient audio while inside a scene.
     private fun startSceneMusic() {
         try {
-            val afd = assets.openFd("audio/scene_ambient.mp3")
+            val audioAsset = intent.getStringExtra("scene_audio") ?: "audio/scene_ambient.mp3"
+            val afd = assets.openFd(audioAsset)
             sceneMusic = MediaPlayer().apply {
                 setDataSource(afd.fileDescriptor, afd.startOffset, afd.length)
                 afd.close()
