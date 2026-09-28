@@ -2,6 +2,7 @@ package `is`.vr.mpv
 
 import android.content.Intent
 import android.os.Bundle
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import `is`.vr.mpv.databinding.ActivityExperienceHubBinding
 
@@ -20,6 +21,12 @@ class ExperienceHubActivity : AppCompatActivity() {
         }
         binding.tileScene.root.setOnClickListener {
             startActivity(Intent(this, SceneListActivity::class.java))
+        }
+        binding.tileTourist.root.setOnClickListener {
+            Toast.makeText(this, R.string.coming_soon, Toast.LENGTH_SHORT).show()
+        }
+        binding.tileShopping.root.setOnClickListener {
+            Toast.makeText(this, R.string.coming_soon, Toast.LENGTH_SHORT).show()
         }
     }
 }

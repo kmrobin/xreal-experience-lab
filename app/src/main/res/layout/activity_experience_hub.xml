@@ -56,6 +56,14 @@
             <include
                 android:id="@+id/tileScene"
                 layout="@layout/tile_scene" />
+
+            <include
+                android:id="@+id/tileTourist"
+                layout="@layout/tile_tourist" />
+
+            <include
+                android:id="@+id/tileShopping"
+                layout="@layout/tile_shopping" />
         </LinearLayout>
 
         <TextView

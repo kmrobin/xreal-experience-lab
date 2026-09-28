@@ -216,6 +216,11 @@
     <string name="persona_product_desc">Inspect 3D products up close — orbit and zoom to review every detail.</string>
     <string name="persona_scene">Scene Reviewer</string>
     <string name="persona_scene_desc">Step inside 360° locations and look around naturally with your head.</string>
+    <string name="persona_tourist">Tourist</string>
+    <string name="persona_tourist_desc">Explore destinations and landmarks in immersive 360°.</string>
+    <string name="persona_shopping">Shopping</string>
+    <string name="persona_shopping_desc">Browse and preview products in a virtual storefront.</string>
+    <string name="coming_soon">Coming soon</string>
     <string name="tile_cta">Enter →</string>
     <string name="scene_list_title">Choose a scene</string>
     <string name="scene_list_subtitle">Select a location, then look around by moving your head.</string>

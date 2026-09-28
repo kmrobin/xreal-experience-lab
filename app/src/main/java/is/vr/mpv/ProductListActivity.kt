@@ -2,6 +2,7 @@ package `is`.vr.mpv
 
 import android.content.Intent
 import android.os.Bundle
+import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.GridLayoutManager
 import `is`.vr.mpv.databinding.ActivityExperienceListBinding
@@ -19,7 +20,10 @@ class ProductListActivity : AppCompatActivity() {
         binding.listEyebrow.text = getString(R.string.persona_product)
         binding.listTitle.text = getString(R.string.product_list_title)
         binding.listSubtitle.text = getString(R.string.product_list_subtitle)
-        binding.backButton.setOnClickListener { finish() }
+        // Back button sits below the product tiles for this screen.
+        binding.backButton.visibility = View.GONE
+        binding.bottomBackButton.visibility = View.VISIBLE
+        binding.bottomBackButton.setOnClickListener { finish() }
 
         binding.recycler.layoutManager = GridLayoutManager(this, 2)
         binding.recycler.adapter = ProductTileAdapter(ExperienceCatalog.products) { product ->
