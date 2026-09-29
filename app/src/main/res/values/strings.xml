@@ -236,6 +236,8 @@
     <string name="next_scene">Next Scene</string>
     <string name="previous_scene">Previous Scene</string>
     <string name="exit_scene_short">Exit</string>
+    <string name="previous_product">Previous</string>
+    <string name="next_product">Next</string>
     <string name="viewer_back">Back</string>
     <string name="viewer_hint">Drag to orbit · pinch to zoom</string>
     <string name="nav_back">Back</string>

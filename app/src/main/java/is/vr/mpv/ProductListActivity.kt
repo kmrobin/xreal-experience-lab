@@ -16,6 +16,7 @@ import java.io.File
 class ProductListActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityExperienceListBinding
+    private var shopping = false
 
     private val pickSceneImage =
         registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
@@ -28,6 +29,7 @@ class ProductListActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         val shopping = intent.getBooleanExtra(EXTRA_SHOPPING, false)
+        this.shopping = shopping
         if (shopping) {
             binding.listEyebrow.text = getString(R.string.persona_shopping)
             binding.listTitle.text = getString(R.string.shopping_list_title)
@@ -57,6 +59,8 @@ class ProductListActivity : AppCompatActivity() {
         val i = Intent(this, ProductViewerActivity::class.java)
         i.putExtra(ProductViewerActivity.EXTRA_MODEL_SRC, product.modelSrc)
         i.putExtra(ProductViewerActivity.EXTRA_TITLE, product.title)
+        i.putExtra(ProductViewerActivity.EXTRA_PRODUCT_ID, product.id)
+        i.putExtra(ProductViewerActivity.EXTRA_SHOPPING, shopping)
         startActivity(i)
     }
 

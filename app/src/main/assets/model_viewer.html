@@ -4,12 +4,50 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 <style>
-  html, body { margin: 0; height: 100%; background: #000; overflow: hidden; }
-  model-viewer { width: 100vw; height: 100vh; background: #000; --poster-color: #000000; }
+  html, body { margin: 0; height: 100%; background: #000; overflow: hidden; cursor: grab; }
+  model-viewer { width: 100vw; height: 100vh; background: #000; --poster-color: #000000; cursor: grab; }
   #msg {
     position: absolute; top: 50%; left: 0; right: 0; transform: translateY(-50%);
     text-align: center; color: #C8B6D0; font-family: -apple-system, Roboto, sans-serif;
-    padding: 24px; font-size: 16px;
+    padding: 24px; font-size: 16px; cursor: grab;
+  }
+  #gesture-hint {
+    position: absolute; inset: 0; display: none; align-items: center; justify-content: center;
+    flex-direction: column; gap: 20px; pointer-events: none; opacity: 0;
+    transition: opacity .4s ease; z-index: 5;
+    font-family: -apple-system, Roboto, sans-serif;
+  }
+  #gesture-hint .gh-grid {
+    display: grid; grid-template-columns: 70px 70px 70px; grid-template-rows: 70px 70px 70px;
+    align-items: center; justify-items: center; width: 210px; height: 210px;
+  }
+  #gesture-hint .gh-arrow {
+    font-size: 44px; line-height: 1; color: #FFFFFF;
+    text-shadow: 0 0 14px rgba(0,0,0,.9); animation: ghPulse 1.6s ease-in-out infinite;
+  }
+  #gesture-hint .gh-up    { grid-column: 2; grid-row: 1; }
+  #gesture-hint .gh-left  { grid-column: 1; grid-row: 2; }
+  #gesture-hint .gh-right { grid-column: 3; grid-row: 2; }
+  #gesture-hint .gh-down  { grid-column: 2; grid-row: 3; }
+  #gesture-hint .gh-hand {
+    grid-column: 2; grid-row: 2; width: 38px; height: 38px; border-radius: 50%;
+    background: rgba(255,255,255,.92); box-shadow: 0 0 22px rgba(255,255,255,.7);
+    animation: ghMove 3.4s ease-in-out infinite;
+  }
+  #gesture-hint .gh-label {
+    color: #FFFFFF; font-size: 18px; font-weight: 600; letter-spacing: .3px;
+    background: rgba(0,0,0,.55); padding: 11px 22px; border-radius: 24px;
+    text-shadow: 0 0 8px rgba(0,0,0,.8);
+  }
+  @keyframes ghPulse { 0%,100% { opacity: .3; transform: scale(.85); } 50% { opacity: 1; transform: scale(1.15); } }
+  @keyframes ghMove {
+    0%,100% { transform: translate(0,0); }
+    15% { transform: translate(-46px,0); }
+    30% { transform: translate(46px,0); }
+    45% { transform: translate(0,0); }
+    60% { transform: translate(0,-46px); }
+    75% { transform: translate(0,46px); }
+    90% { transform: translate(0,0); }
   }
 </style>
 <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
@@ -27,16 +65,43 @@
     min-camera-orbit="auto 0deg auto"
     max-camera-orbit="auto 180deg auto">
 </model-viewer>
+<div id="gesture-hint">
+  <div class="gh-grid">
+    <span class="gh-arrow gh-up">▲</span>
+    <span class="gh-arrow gh-left">◀</span>
+    <div class="gh-hand"></div>
+    <span class="gh-arrow gh-right">▶</span>
+    <span class="gh-arrow gh-down">▼</span>
+  </div>
+  <div class="gh-label">Swipe to rotate · up · down · left · right</div>
+</div>
 <div id="msg">Loading model…</div>
 <script>
   const mv = document.getElementById('mv');
   const msg = document.getElementById('msg');
+  const gestureHint = document.getElementById('gesture-hint');
+  let gestureHintTimer = null;
+  function showGestureHint() {
+    gestureHint.style.display = 'flex';
+    requestAnimationFrame(function () { gestureHint.style.opacity = '1'; });
+    clearTimeout(gestureHintTimer);
+    gestureHintTimer = setTimeout(hideGestureHint, 6000);
+  }
+  function hideGestureHint() {
+    if (!gestureHint || gestureHint.style.opacity === '0') return;
+    clearTimeout(gestureHintTimer);
+    gestureHint.style.opacity = '0';
+    setTimeout(function () { gestureHint.style.display = 'none'; }, 400);
+  }
+  ['pointerdown', 'touchstart', 'wheel'].forEach(function (ev) {
+    mv.addEventListener(ev, hideGestureHint, { passive: true });
+  });
   function loadModel(src) {
     msg.style.display = 'block';
     msg.textContent = 'Loading model…';
     mv.src = src;
   }
-  mv.addEventListener('load', function () { msg.style.display = 'none'; });
+  mv.addEventListener('load', function () { msg.style.display = 'none'; showGestureHint(); });
   mv.addEventListener('error', function () {
     msg.style.display = 'block';
     msg.textContent = 'Could not load this model. Check the network or add a .glb under assets/models/.';
@@ -60,6 +125,7 @@
     mv.cameraOrbit = theta + 'deg ' + phi + 'deg ' + o.radius + 'm';
   }
   mv.addEventListener('pointermove', function (e) {
+    hideGestureHint();
     if (e.pointerType === 'touch') return;
     if (px !== null) {
       const dx = e.clientX - px, dy = e.clientY - py;

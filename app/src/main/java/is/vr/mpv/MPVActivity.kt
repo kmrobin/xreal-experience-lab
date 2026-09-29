@@ -550,7 +550,7 @@ class MPVActivity : AppCompatActivity(), MPVLib.EventObserver, TouchGesturesObse
         if (intent.getBooleanExtra("show_exit", false)) {
             sceneMode = true
             binding.exitSceneButton.visibility = View.VISIBLE
-            binding.exitSceneButton.setOnClickListener { finish() }
+            binding.exitSceneButton.setOnClickListener { goHome() }
             binding.experienceButton.visibility = View.VISIBLE
             binding.experienceButton.setOnClickListener {
                 toggleXrealControl()
@@ -671,6 +671,15 @@ class MPVActivity : AppCompatActivity(), MPVLib.EventObserver, TouchGesturesObse
             it.release()
         }
         sceneMusic = null
+    }
+
+    // Exits the immersive scene straight to the main hub, clearing the list screens.
+    private fun goHome() {
+        startActivity(
+            Intent(this, ExperienceHubActivity::class.java)
+                .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
+        )
+        finish()
     }
 
     // Advances to the next/previous scene in the same catalog category, wrapping around.
